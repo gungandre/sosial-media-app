@@ -198,7 +198,7 @@ export async function likePost(postId: string, likesArray: string[]) {
       }
     );
 
-    if (!updatedPost) throw error;
+    if (!updatedPost) throw Error;
 
     return updatedPost;
   } catch (error) {
@@ -218,7 +218,7 @@ export async function savePost(postId: string, userId: string) {
       }
     );
 
-    if (!updatedPost) throw error;
+    if (!updatedPost) throw Error;
 
     return updatedPost;
   } catch (error) {
@@ -234,7 +234,7 @@ export async function deleteSavedPost(savedRecordId: string) {
       savedRecordId
     );
 
-    if (!statusCode) throw error;
+    if (!statusCode) throw Error;
 
     return { status: "ok" };
   } catch (error) {
