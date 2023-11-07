@@ -2,6 +2,7 @@ import { Routes, Route } from "react-router-dom";
 import {
   AllUsers,
   CreatePost,
+  EditPost,
   Explore,
   Home,
   PostDetails,
@@ -34,10 +35,10 @@ function App() {
           <Route path="/saved" element={<Saved />} />
           <Route path="/all-users" element={<AllUsers />} />
           <Route path="/create-post" element={<CreatePost />} />
-          <Route path="/update-post/:id" element={<PostDetails />} />
-          <Route path="/posts/:id" element={<Explore />} />
+          <Route path="/update-post/:id" element={<EditPost />} />
+          <Route path="/posts/:id" element={<PostDetails />} />
           <Route path="/profile/:id/*" element={<Profile />} />
-          <Route path="/update-profile/:id/" element={<UpdateProfile />} />
+          <Route path="/update-profile/:id" element={<UpdateProfile />} />
         </Route>
       </Routes>
       {/* menambahkan toastor komponent hadcn harus berada di component paling atas/induknya yaitu app.tsx */}

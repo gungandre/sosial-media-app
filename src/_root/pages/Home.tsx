@@ -15,12 +15,14 @@ const Home = () => {
   }
 
   return (
-    <div className="flex flex-1">
+    <div className="flex flex-1 ">
       <div className="home-container">
         <div className="home-posts">
           <h2 className="h3-bold md:h2-bold text-left w-full">Home Feed</h2>
           {isPostLoading && !posts ? (
-            <Loader />
+            <div className="flex justify-center  items-center w-full h-full">
+              <Loader />
+            </div>
           ) : (
             <ul className="flex flex-col flex-1 gap-9 w-full">
               {posts?.documents?.map((post: Models.Document) => (
@@ -30,6 +32,9 @@ const Home = () => {
           )}
         </div>
       </div>
+      {/* <div className="flex flex-col items-center gap-10 py-10 px-5 md:px-8 lg:p-14 ">
+        vrwvwrvr
+      </div> */}
     </div>
   );
 };

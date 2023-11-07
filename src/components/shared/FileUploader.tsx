@@ -8,7 +8,7 @@ type FileUploaderProps = {
 };
 
 const FileUploader = ({ fieldChange, mediaUrl }: FileUploaderProps) => {
-  const [fileUrl, setFileUrl] = useState("");
+  const [fileUrl, setFileUrl] = useState(mediaUrl);
   //   <File[]> adalah bawaan dari typescript unutk menginisialisasi tipe data array object
   const [file, setFile] = useState<File[]>([]);
 
