@@ -22,7 +22,7 @@ import { useUserContext } from "@/context/AuthContext";
 
 const SignInForm = () => {
   const { toast } = useToast();
-  const { checkAuthUser, isPending: isUserLoading } = useUserContext();
+  const { checkAuthUser } = useUserContext();
   const navigate = useNavigate();
 
   // property mutateAsync yang kita dapat adalah method yang kita deklarasikan di useMutate
