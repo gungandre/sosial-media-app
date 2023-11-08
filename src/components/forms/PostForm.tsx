@@ -23,6 +23,7 @@ import {
   useCreatePost,
   useUpdatePost,
 } from "@/lib/react-query/queriesAndMutations";
+import { Loader } from "../shared";
 
 type PostFormProps = {
   post?: Models.Document;
@@ -81,6 +82,10 @@ const PostForm = ({ post, action }: PostFormProps) => {
 
     navigate("/");
   }
+
+  const cancelHandler = () => {
+    navigate("/");
+  };
 
   return (
     <Form {...form}>
@@ -164,7 +169,11 @@ const PostForm = ({ post, action }: PostFormProps) => {
           )}
         />
         <div className="flex gap-4 items-center justify-end">
-          <Button type="button" className="shad-button_dark_4">
+          <Button
+            type="button"
+            onClick={cancelHandler}
+            className="shad-button_dark_4"
+          >
             Cancel
           </Button>
           <Button
@@ -172,7 +181,7 @@ const PostForm = ({ post, action }: PostFormProps) => {
             className="shad-button_primary whitespace-nowrap"
             disabled={isLoadingCreate || isLoadingUpdate}
           >
-            {isLoadingCreate || (isLoadingUpdate && "Loading...")}
+            {isLoadingCreate || isLoadingUpdate ? <Loader /> : ""}
             {action} Post
           </Button>
         </div>

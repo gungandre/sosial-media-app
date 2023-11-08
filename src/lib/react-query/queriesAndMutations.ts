@@ -13,14 +13,19 @@ import {
   getInfinitePosts,
   getPostById,
   getRecentPosts,
+  getUserById,
+  getUserPosts,
+  getUsers,
+  getUsersInfinite,
   likePost,
   savePost,
   searchPosts,
   signInAccount,
   signOutAccount,
   updatePost,
+  updateUser,
 } from "../appwrite/api";
-import { INewPost, INewUser, IUpdatePost } from "@/types";
+import { INewPost, INewUser, IUpdatePost, IUpdateUser } from "@/types";
 import { QUERY_KEYS } from "./queryKeys";
 
 // useMutation dugunakan untuk interaksi data dengan api
@@ -58,10 +63,44 @@ export const useCreatePost = () => {
   });
 };
 
+// export const useGetPosts = () => {
+//   return useInfiniteQuery({
+//     queryKey: [QUERY_KEYS.GET_INFINITE_POSTS],
+//     queryFn: getInfinitePosts as any[],
+//     getNextPageParam: (lastPage: any) => {
+//       // If there's no data, there are no more pages.
+//       if (lastPage && lastPage.documents.length === 0) {
+//         console.log("tidak ada data", lastPage);
+//         return null;
+//       }
+
+//       // Use the $id of the last document as the cursor.
+//       // jadi konsepnya ketika fetchNextPage() dipanggil, maka akan mengambil data $id array terakhir, lalu mengirimkannya ke function getInfinitePosts, di function getInfinitePosts menerima parameter pageParam
+//       // variable lastId di bawah contoh pengambilan datanya
+//       const lastId = lastPage.documents[lastPage.documents.length - 1].$id;
+//       return lastId;
+//     },
+//   });
+// };
+
 export const useGetRecentPosts = () => {
-  return useQuery({
+  return useInfiniteQuery({
     queryKey: [QUERY_KEYS.GET_RECENT_POSTS],
-    queryFn: getRecentPosts,
+    queryFn: getRecentPosts as number,
+    getNextPageParam: (lastPage: any) => {
+      // If there's no data, there are no more pages.
+      if (!lastPage) {
+        return null;
+      }
+      if (lastPage.documents.length === 0) {
+        return null;
+      }
+      // Use the $id of the last document as the cursor.
+      // jadi konsepnya ketika fetchNextPage() dipanggil, maka akan mengambil data $id array terakhir, lalu mengirimkannya ke function getInfinitePosts, di function getInfinitePosts menerima parameter pageParam
+      // variable lastId di bawah contoh pengambilan datanya
+      const lastId = lastPage?.documents[lastPage.documents?.length - 1].$id;
+      return lastId;
+    },
   });
 };
 
@@ -182,16 +221,27 @@ export const useDeletePost = () => {
 export const useGetPosts = () => {
   return useInfiniteQuery({
     queryKey: [QUERY_KEYS.GET_INFINITE_POSTS],
-    queryFn: getInfinitePosts as any,
+    queryFn: getInfinitePosts as number,
     getNextPageParam: (lastPage: any) => {
+      console.log({ lastPage });
       // If there's no data, there are no more pages.
-      if (lastPage && lastPage.documents.length === 0) {
+      if (!lastPage) {
         return null;
+      }
+      if (lastPage.documents.length === 0) {
+        return null;
+      }
+      if (lastPage && lastPage?.documents?.length === 0) {
+        console.log("tidak ada data", lastPage);
+        return null;
+      } else {
+        const lastId = lastPage?.documents[lastPage?.documents?.length - 1].$id;
+        return lastId;
       }
 
       // Use the $id of the last document as the cursor.
-      const lastId = lastPage.documents[lastPage.documents.length - 1].$id;
-      return lastId;
+      // jadi konsepnya ketika fetchNextPage() dipanggil, maka akan mengambil data $id array terakhir, lalu mengirimkannya ke function getInfinitePosts, di function getInfinitePosts menerima parameter pageParam
+      // variable lastId di bawah contoh pengambilan datanya
     },
   });
 };
@@ -201,5 +251,72 @@ export const useSearchPosts = (searchTerm: string) => {
     queryKey: [QUERY_KEYS.SEARCH_POSTS, searchTerm],
     queryFn: () => searchPosts(searchTerm),
     enabled: !!searchTerm,
+  });
+};
+
+export const useGetUsers = (limit?: number) => {
+  return useQuery({
+    queryKey: [QUERY_KEYS.GET_USERS],
+    queryFn: () => getUsers(limit),
+  });
+};
+
+export const useGetUsersInfinite = () => {
+  return useInfiniteQuery({
+    queryKey: ["userInfiniteQuery"],
+    queryFn: getUsersInfinite as number,
+    getNextPageParam: (lastPage: any) => {
+      console.log({ lastPage });
+      // If there's no data, there are no more pages.
+      if (!lastPage) {
+        return null;
+      }
+      if (lastPage.documents.length === 0) {
+        return null;
+      }
+      if (lastPage && lastPage?.documents?.length === 0) {
+        console.log("tidak ada data", lastPage);
+        return null;
+      } else {
+        const lastId = lastPage?.documents[lastPage?.documents?.length - 1].$id;
+        return lastId;
+      }
+
+      // Use the $id of the last document as the cursor.
+      // jadi konsepnya ketika fetchNextPage() dipanggil, maka akan mengambil data $id array terakhir, lalu mengirimkannya ke function getInfinitePosts, di function getInfinitePosts menerima parameter pageParam
+      // variable lastId di bawah contoh pengambilan datanya
+    },
+  });
+};
+
+export const useGetUserById = (userId: string) => {
+  return useQuery({
+    queryKey: [QUERY_KEYS.GET_USER_BY_ID, userId],
+    queryFn: () => getUserById(userId),
+    // fungsi method enabled ini digunakan query dijalankan jika userId bernilai true atau ada datanya, jika tidak maka tidak dijalankan
+    enabled: !!userId,
+  });
+};
+
+export const useUpdateUser = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (user: IUpdateUser) => updateUser(user),
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.GET_CURRENT_USER],
+      });
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.GET_USER_BY_ID, data?.$id],
+      });
+    },
+  });
+};
+
+export const useGetUserPosts = (userId?: string) => {
+  return useQuery({
+    queryKey: [QUERY_KEYS.GET_USER_POSTS, userId],
+    queryFn: () => getUserPosts(userId),
+    enabled: !!userId,
   });
 };

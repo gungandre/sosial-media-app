@@ -34,7 +34,7 @@ const Explore = () => {
     );
   }
 
-  console.log(posts);
+  console.log({ posts });
 
   const shouldShowSearchResults = searchValue !== "";
   const shouldShowPosts =
